@@ -13,6 +13,13 @@
 /// A helper that NSLogs an error message if "c" is an error code
 #define NSLogError(c,str) do{if (c) NSLog(@"Error (%@): %ld:%@", str, (long)c,[NSError errorWithDomain:NSMachErrorDomain code:c userInfo:nil]);}while(false)
 
+// Debug logging helper
+#ifdef DEBUG_MIDI
+#   define NSLogDebug(fmt, ...) NSLog((@"%s:%d " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#else
+#   define NSLogDebug(...)
+#endif
+
 //==============================================================================
 // ARC
 
@@ -145,7 +152,7 @@ void PGMIDIReadProc(const MIDIPacketList *pktlist, void *readProcRefCon, void *s
 
 - (void) sendBytes:(const UInt8*)bytes size:(UInt32)size
 {
-    NSLog(@"%s(%u bytes to core MIDI)", __func__, unsigned(size));
+    NSLogDebug(@"%u bytes to core MIDI", unsigned(size));
     assert(size < 65536);
     Byte packetBuffer[size+100];
     MIDIPacketList *packetList = (MIDIPacketList*)packetBuffer;
@@ -384,7 +391,7 @@ void PGMIDINotifyProc(const MIDINotification *message, void *refCon)
 
 - (void) sendBytes:(const UInt8*)data size:(UInt32)size
 {
-    NSLog(@"%s(%u bytes to core MIDI)", __func__, unsigned(size));
+    NSLogDebug(@"%u bytes to core MIDI", unsigned(size));
     assert(size < 65536);
     Byte packetBuffer[size+100];
     MIDIPacketList *packetList = (MIDIPacketList*)packetBuffer;
